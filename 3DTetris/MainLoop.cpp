@@ -16,9 +16,9 @@ using namespace std;
 GLuint loadShaders(const char* vertexFilePath, const char* fragmentFilePath, const char* geometryFilePath);
 GLint height = 512, width = 512;
 GLuint Shader;
-GLuint VAO, VBO, test;
 # define PI 3.14159265358979323846  /* pi */
 Cube cube;
+GLint texture;
 
 void init(void)
 {
@@ -26,8 +26,8 @@ void init(void)
 	printf("\n%s", (char*)glGetString(GL_VERSION));
 	printf("\n%s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 	Shader = loadShaders("mainVertex.vs", "mainFragment.fs", "");
+	cube.setup();
 
-	test = cube.setup();
 }
 
 void display(void)
@@ -35,15 +35,16 @@ void display(void)
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GLUT_MULTISAMPLE);
 
 	//===================================
 	// Camera setup
 	//===================================
 	GLfloat viewpoint[3];
-	viewpoint[0] = -3.0;
+	viewpoint[0] = 0.0;
 	viewpoint[1] = 2.0;
-	viewpoint[2] = 1.0;
+	viewpoint[2] = 2.0;
 	glViewport(0, 0, width, height);
 	glm::mat4 Projection = glm::perspective(45.0f, 1.0f, 0.1f, 100.f);
 	glm::mat4 View = glm::lookAt(glm::vec3(viewpoint[0], viewpoint[1], viewpoint[2]),
@@ -75,8 +76,6 @@ int main(int argc, char** argv)
 	glutInitWindowSize(width, height);
 	glutInitContextVersion(4, 2);  // (4,5) (3,3);
 	glutInitContextProfile(GLUT_CORE_PROFILE);  //GLUT_COMPATIBILITY_PROFILE
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GLUT_MULTISAMPLE);
 	glutCreateWindow(argv[0]);
 	glewExperimental = GL_TRUE;
 	if (glewInit()) printf("Error");
