@@ -1,7 +1,4 @@
-﻿  Cube.cpp
-  Generating Code...
-  Compiling...
-  MainLoop.cpp
-  Generating Code...
+﻿  MainLoop.cpp
+c:\users\agular\documents\visual studio 2015\projects\3dtetris\3dtetris\camera.h(12): warning C4305: 'initializing': truncation from 'double' to 'float'
   3DTetris.vcxproj -> C:\Users\Agular\documents\visual studio 2015\Projects\3DTetris\Debug\3DTetris.exe
   3DTetris.vcxproj -> C:\Users\Agular\documents\visual studio 2015\Projects\3DTetris\Debug\3DTetris.pdb (Full PDB)

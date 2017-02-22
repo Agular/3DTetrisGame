@@ -12,12 +12,14 @@
 
 //#########custom headers###########//
 #include "Cube.h"
+#include "Camera.h"
 using namespace std;
 GLuint loadShaders(const char* vertexFilePath, const char* fragmentFilePath, const char* geometryFilePath);
 GLint height = 512, width = 512;
 GLuint Shader;
 # define PI 3.14159265358979323846  /* pi */
 Cube cube;
+Camera camera;
 GLint texture;
 
 void init(void)
@@ -41,17 +43,8 @@ void display(void)
 	//===================================
 	// Camera setup
 	//===================================
-	GLfloat viewpoint[3];
-	viewpoint[0] = 0.0;
-	viewpoint[1] = 2.0;
-	viewpoint[2] = 2.0;
-	glViewport(0, 0, width, height);
-	glm::mat4 Projection = glm::perspective(45.0f, 1.0f, 0.1f, 100.f);
-	glm::mat4 View = glm::lookAt(glm::vec3(viewpoint[0], viewpoint[1], viewpoint[2]),
-		glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	glUseProgram(Shader);
-	glUniformMatrix4fv(glGetUniformLocation(Shader, "view"), 1, GL_FALSE, glm::value_ptr(View));
-	glUniformMatrix4fv(glGetUniformLocation(Shader, "projection"), 1, GL_FALSE, glm::value_ptr(Projection));
+	camera.set(0, 0, width, height, Shader);
 	
 	glm::mat4 model = glm::mat4(1.0f);
 	glUniformMatrix4fv(glGetUniformLocation(Shader, "model"), 1, GL_FALSE, glm::value_ptr(model));
@@ -64,6 +57,27 @@ void display(void)
 void reshape(int w, int h) {
 	width = w;
 	height = h;
+}
+
+void keyboard(unsigned char theKey, int mouseX, int mouseY) {
+	switch (theKey) {
+	case 'a':
+		camera.changePosX(-1);
+		display();
+		break;
+	case 'd':
+		camera.changePosX(1);
+		display();
+		break;
+	case 'w':
+		camera.changePosY(1);
+		display();
+		break;
+	case 's':
+		camera.changePosY(-1);
+		display();
+		break;
+	}
 }
 
 //===================================
@@ -82,5 +96,6 @@ int main(int argc, char** argv)
 	init();
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(display);
+	glutKeyboardFunc(keyboard);
 	glutMainLoop();
 }

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="LoadShader.cpp" />
     <ClCompile Include="MainLoop.cpp" />
@@ -28,6 +29,7 @@
     <None Include="mainVertex.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Cube.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

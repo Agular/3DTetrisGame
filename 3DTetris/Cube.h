@@ -54,5 +54,4 @@ private:
 public:
 	void setup();
 	void draw();
-
 };
