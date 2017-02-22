@@ -9,18 +9,19 @@
 #include <glew.h>
 #include <freeglut.h>
 #include <FreeImage.h>
-
+using namespace std;
 //#########custom headers###########//
 #include "Cube.h"
 #include "Camera.h"
-using namespace std;
+
 GLuint loadShaders(const char* vertexFilePath, const char* fragmentFilePath, const char* geometryFilePath);
-GLint height = 512, width = 512;
-GLuint Shader;
-# define PI 3.14159265358979323846  /* pi */
+int height = 512, width = 512, Shader, texture;
+float lastX = (float)width/2, lastY = (float)height /2;
+Camera camera; 
 Cube cube;
-Camera camera;
-GLint texture;
+int lastTime = glutGet(GLUT_ELAPSED_TIME);
+bool firstMouse = true;
+
 
 void init(void)
 {
@@ -29,7 +30,7 @@ void init(void)
 	printf("\n%s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 	Shader = loadShaders("mainVertex.vs", "mainFragment.fs", "");
 	cube.setup();
-
+	camera.getWidthHeight(width, height);
 }
 
 void display(void)
@@ -57,28 +58,85 @@ void display(void)
 void reshape(int w, int h) {
 	width = w;
 	height = h;
+	camera.getWidthHeight(width, height);
 }
 
-void keyboard(unsigned char theKey, int mouseX, int mouseY) {
-	switch (theKey) {
-	case 'a':
-		camera.changePosX(-1);
-		display();
-		break;
-	case 'd':
-		camera.changePosX(1);
-		display();
-		break;
-	case 'w':
-		camera.changePosY(1);
-		display();
-		break;
-	case 's':
-		camera.changePosY(-1);
-		display();
-		break;
+void keyboardDown(unsigned char theKey, int mouseX, int mouseY) {
+	if (theKey == 'a') {
+		camera.setKeyState(theKey, true);
+	}
+	if (theKey == 'd') {
+		camera.setKeyState(theKey, true);
+	}
+	if (theKey == 'w') {
+		camera.setKeyState(theKey, true);
+	}
+	if (theKey == 's') {
+		camera.setKeyState(theKey, true);
+	}
+	//The escape key
+	if (theKey == 27) {
+		exit(-1);
 	}
 }
+
+void keyboardUp(unsigned char theKey, int mouseX, int mouseY) {
+	if (theKey == 'a') {
+		camera.setKeyState(theKey, false);
+	}
+	if (theKey == 'd') {
+		camera.setKeyState(theKey, false);
+	}
+	if (theKey == 'w') {
+		camera.setKeyState(theKey, false);
+	}
+	if (theKey == 's') {
+		camera.setKeyState(theKey, false);
+	}
+}
+
+void mouse(int mouseX, int mouseY) {
+	if (firstMouse) // this bool variable is initially set to true
+	{
+		lastX = (float)mouseX;
+		lastY = (float)mouseY;
+		firstMouse = false;
+	}
+	GLfloat xoffset = (float)mouseX - lastX;
+	GLfloat yoffset = lastY - (float)mouseY; // Reversed since y-coordinates range from bottom to top
+
+	//If we leave the screen and come back, there will be a big jump, so we will null it.
+	if (abs(xoffset) > 1 || abs(yoffset) > 1) {
+		xoffset > 0 ? xoffset = 1 : xoffset = -1;
+		yoffset > 0 ? yoffset = 1 : yoffset = -1;
+		lastX = mouseX;
+		lastY = mouseY;
+	}
+	lastX = mouseX;
+	lastY = mouseY;
+	camera.getMouse(xoffset, yoffset);
+}
+void mouseWheel(int button, int dir, int x, int y) {
+	if (dir > 0) {
+		camera.getMouseWheel(-1.0f);
+	}
+	else {
+		camera.getMouseWheel(1.0f);
+	}
+}
+
+//===================================
+// Timer function
+//===================================
+void timer(int v) {
+	int currentTime = glutGet(GLUT_ELAPSED_TIME);
+	float deltaTime = float(currentTime - lastTime) / 1000.f;
+	lastTime = currentTime;
+	camera.update(deltaTime);
+	display();
+	glutTimerFunc(1000.0f / 60.0f, timer, v);
+}
+
 
 //===================================
 // Main loop
@@ -96,6 +154,11 @@ int main(int argc, char** argv)
 	init();
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(display);
-	glutKeyboardFunc(keyboard);
+	glutKeyboardFunc(keyboardDown);
+	glutKeyboardUpFunc(keyboardUp);
+	glutMotionFunc(mouse);
+	glutMouseWheelFunc(mouseWheel);
+	glutSetCursor(GLUT_CURSOR_NONE);
+	glutTimerFunc(1000.0f/60.0f, timer, 0);
 	glutMainLoop();
 }
